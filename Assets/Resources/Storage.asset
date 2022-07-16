@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb92226e9cd970b43bd11ea929aeeab7, type: 3}
+  m_Name: Storage
+  m_EditorClassIdentifier: 
+  _configs:
+  - _name: inventory
+    _type: 0
+    _defaultValue: '[null,null,null,null,null,null,null]'
+  - _name: enable_custom_inventory
+    _type: 1
+    _defaultValue: 1
+  - _name: local_quests
+    _type: 2
+    _defaultValue: '[1]'
+  - _name: enable_custom_local_quests
+    _type: 3
+    _defaultValue: 1
+  - _name: equipment
+    _type: 4
+    _defaultValue: '[null,null,null,null,null,null]'
+  - _name: enable_custom_equipment
+    _type: 5
+    _defaultValue: 1

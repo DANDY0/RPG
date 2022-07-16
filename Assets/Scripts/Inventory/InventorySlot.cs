@@ -1,0 +1,57 @@
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class InventorySlot : MonoBehaviour
+{
+    [SerializeField] private Image icon;
+    [SerializeField] private GameObject focus;
+    [SerializeField] private TMP_Text quantityText;
+
+    private Button button;
+
+    public Item Item;
+    public bool IsSelected { get; private set; }
+
+
+    private void Start()
+    {
+        button = GetComponent<Button>();
+        button.onClick.AddListener(OnPointerClick);
+    }
+
+    public InventorySlot Select()
+    {
+        focus.SetActive(true);
+        IsSelected = true;
+        return this;
+    }
+
+    public InventorySlot Deselect()
+    {
+        if (this != null)
+        {
+            focus.SetActive(false);
+            IsSelected = false;
+        }
+        return null;
+    }
+
+    public void OnPointerClick()
+    {
+        EventsManager.OnItemClicked?.Invoke(this);
+    }
+
+    public void AddItem(Item newItem)
+    {
+        Item = newItem;
+        icon.sprite = Item.Icon;
+
+        icon.enabled = true;
+    }
+
+    public void DeleteSlot()
+    {
+        Destroy(gameObject);
+    }
+}
