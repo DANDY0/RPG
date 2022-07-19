@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -10,32 +8,36 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private PlayerAnimationController animator;
     [SerializeField] private Button attackButton;
     [SerializeField] private PlayerFieldOfView fovPlayer;
-    private bool canAttack =true;
- 
+
+    private bool canAttack = true;
+
     private void OnEnable()
     {
         attackButton.onClick.AddListener(Attack);
-        //player = GetComponent<Player>();
     }
 
-    public void Attack()
+    private void Attack()
     {
         animator.Attack();
-       // StartCoroutine(CanAttack());
-       if (canAttack && fovPlayer.damageableTargets.Count > 0)
-       {
-
-           foreach (var enemy in fovPlayer.damageableTargets)
-               enemy.GetComponent<Enemy>().ApplyDamage(1);
-           
-           StartCoroutine(CanAttack());
-       }
-
-
-      
-        //  player.Attack();
+        if (canAttack && fovPlayer.DamageableTargets.Count > 0)
+        {
+            foreach (var enemy in fovPlayer.DamageableTargets)
+                enemy.GetComponent<Enemy>().ApplyDamage(SetPlayerDamage());
+            StartCoroutine(CanAttack());
+        }
     }
- 
+
+    private int SetPlayerDamage()
+    {
+        var stats = GetComponent<Player>().PlayerStats;
+        int random = Random.Range(1, 101);
+
+        if (random > stats.CriticalChance)
+            return stats.Damage;
+
+        return stats.Damage * (1 + stats.CriticalDamage / 100);
+    }
+
 
     IEnumerator CanAttack()
     {
@@ -43,7 +45,7 @@ public class PlayerAttack : MonoBehaviour
         yield return new WaitForSeconds(1f);
         canAttack = true;
     }
-    
+
 
     private void OnDisable()
     {

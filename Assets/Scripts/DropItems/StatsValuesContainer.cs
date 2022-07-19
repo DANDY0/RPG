@@ -1,11 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+
 [CreateAssetMenu(fileName = "NewStats", menuName = "ItemStats")]
 public class StatsValuesContainer : ScriptableObject
 {
-    public Vector2Int[] rarityChanceRange;
-    public Vector2Int[] statValuesRange;
-    public Vector2Int[] criticalChanceRange;
-    public float[] statsMultiplier;
+    public Vector2Int[] RarityChanceRange;
+    public Vector2Int[] DefenceRange;
+    public Vector2Int[] SpeedRange;
+    public Vector2Int[] DamageRange;
+    public Vector2Int[] CriticalChanceRange;
+    public Vector2Int[] CriticalDamageRange;
+
+    public float[] StatsMultiplier;
 }

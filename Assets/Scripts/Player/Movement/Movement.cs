@@ -7,28 +7,18 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 {
     [Header("Character movement stats")]
-    [SerializeField] private float _moveSpeed;
-    [SerializeField] private float _rotateSpeed;
+    [SerializeField] private float rotateSpeed;
 
-    [Header("Gravity handling")]
-    private float _gravityForce = 9.8f;
-    public float GravityForce 
-    { 
-        set 
-        {
-            if (value >= 0)
-                _gravityForce = value;
-        } 
-    }
-
-    [Header("Character components")]
-    private CharacterController _characterController;
-
-    [HideInInspector] public Vector3 velocityDirection;
+    private Player player;
+    private float gravityForce;
+    private CharacterController characterController;
+    private Vector3 velocityDirection;
 
     private void Start()
     {
-        _characterController = GetComponent<CharacterController>();
+        gravityForce = 9.8f;
+        player = GetComponent<Player>();
+        characterController = GetComponent<CharacterController>();
         EventsManager.OnDeath += BlockMovement;
     }
 
@@ -39,32 +29,33 @@ public class Movement : MonoBehaviour
 
     public void MoveCharacter(Vector3 moveDirection)
     {
-        velocityDirection.x = moveDirection.x * _moveSpeed;
-        velocityDirection.z = moveDirection.z * _moveSpeed;
-        _characterController.Move(velocityDirection * Time.deltaTime);
+        int speed = Mathf.Clamp(4*(player.PlayerStats.Speed/100),4,8);
+        velocityDirection.x = moveDirection.x * speed;
+        velocityDirection.z = moveDirection.z * speed;
+        characterController.Move(velocityDirection * Time.deltaTime);
     }
 
     public void RotateCharacter(Vector3 moveDirection)
     {
         if (Vector3.Angle(transform.forward, moveDirection) > 0)
         {
-            Vector3 newDirection = Vector3.RotateTowards(transform.forward, moveDirection, _rotateSpeed, 0);
+            Vector3 newDirection = Vector3.RotateTowards(transform.forward, moveDirection, rotateSpeed, 0);
             transform.rotation = Quaternion.LookRotation(newDirection);
         }
     }
 
     private void GravityHandling()
     {
-        if (!_characterController.isGrounded)
-            velocityDirection.y -= _gravityForce * Time.deltaTime;
+        if (!characterController.isGrounded)
+            velocityDirection.y -= gravityForce * Time.deltaTime;
         else
             velocityDirection.y = -0.5f;
     }
 
     public void BlockMovement()
     {
-        _moveSpeed = 0;
-        _rotateSpeed = 0;
+        player.PlayerStats.Speed = 0;
+        rotateSpeed = 0;
     }
     
 }

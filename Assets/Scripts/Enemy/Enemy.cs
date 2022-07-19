@@ -1,37 +1,40 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 using UnityEngine.AI;
 
 public enum CurrentState
 {
-    Patrol, 
-    Attack
+    Patrol = 0,
+    Attack = 1
 }
 
 public abstract class Enemy : MonoBehaviour, IDamageable
 {
     [Header("Enemy Properties")]
-    [SerializeField] protected int maxHealth; 
+    [SerializeField] protected int maxHealth;
     [SerializeField] protected List<Transform> waypoints;
+    [SerializeField] protected ItemPickup itemToDrop;
+
 
     protected int currentHealth;
-
     protected EnemyHealthBar enemyHealthBar;
     protected EnemyAnimationController enemyAnimator;
     protected NavMeshAgent enemyAgent;
 
-    public CurrentState currentState;
+    public EnemyStats EnemyStats;
+    public CurrentState CurState;
 
     protected virtual void Start()
     {
+        maxHealth = EnemyStats.MaxHealth;
         enemyAnimator = GetComponent<EnemyAnimationController>();
         enemyAgent = GetComponent<NavMeshAgent>();
         enemyHealthBar = GetComponentInChildren<EnemyHealthBar>();
 
         currentHealth = maxHealth;
-        enemyHealthBar.UpdateHealthBar(maxHealth,currentHealth);
+        enemyHealthBar.UpdateHealthBar(maxHealth, currentHealth);
     }
 
     protected virtual void Update()
@@ -43,14 +46,11 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     {
         if (Mathf.Abs(enemyAgent.velocity.x) > 0.2f || Mathf.Abs(enemyAgent.velocity.z) > 0.2f)
         {
-            if (currentState == CurrentState.Attack)
-            {
+            if (CurState == CurrentState.Attack)
                 animationController.AnimateRun(true);
-            }
-            else if (currentState == CurrentState.Patrol)
-            {
+
+            else if (CurState == CurrentState.Patrol)
                 animationController.AnimateWalk(true);
-            }
         }
         else
             animationController.AnimateRun(false);
@@ -62,20 +62,44 @@ public abstract class Enemy : MonoBehaviour, IDamageable
         enemyAnimator.AnimateDamage(true);
 
     }
-    IEnumerator ReducingDelay(int damageValue)
+
+    public IEnumerator ReducingDelay(int damageValue)
     {
         yield return new WaitForSeconds(.7f);
         currentHealth -= damageValue;
-        enemyHealthBar.UpdateHealthBar(maxHealth,currentHealth);
-        if (currentHealth == 0)
+        enemyHealthBar.UpdateHealthBar(maxHealth, currentHealth);
+
+        if (currentHealth <= 0)
+            Die();
+    }
+
+    protected virtual void Die()
+    {
+        gameObject.GetComponent<StateController>().enabled = false;
+        gameObject.GetComponent<Collider>().enabled = false;
+
+        enemyHealthBar.gameObject.SetActive(false);
+        enemyAgent.enabled = false;
+        enemyAnimator.AnimateDie(true);
+
+        DropItem();
+        StartCoroutine(DisappearDelay());
+    }
+
+    private void DropItem()
+    {
+        if (TryGetComponent(out DarkNight darkNight) || TryGetComponent(out Demon demon))
         {
-            //тут смэрть
-            gameObject.GetComponent<StateController>().enabled = false;
-            gameObject.GetComponent<Collider>().enabled = false;
-            enemyHealthBar.gameObject.SetActive(false);
-            enemyAgent.enabled = false;
-            enemyAnimator.AnimateDie(true);
-            StartCoroutine(DisappearDelay());
+            for (int i = 0; i < 3; i++)
+            {
+                var pos = new Vector3(transform.position.x, transform.position.y + 1f, transform.position.z);
+                Instantiate(itemToDrop, pos, Quaternion.identity);
+            }
+        }
+        else
+        {
+            var pos = new Vector3(transform.position.x, transform.position.y + 1f, transform.position.z);
+            Instantiate(itemToDrop, pos, Quaternion.identity);
         }
     }
 
@@ -85,7 +109,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable
 
         var sequence = DOTween.Sequence();
 
-        sequence.Append(transform.DOMoveY(transform.position.y - 5f , 10f));
+        sequence.Append(transform.DOMoveY(transform.position.y - 5f, 10f));
 
         sequence.OnComplete(() =>
         {

@@ -4,15 +4,15 @@ using UnityEngine.UI;
 
 public class EquipmentSlot : MonoBehaviour
 {
-    [SerializeField] private Image image;
-    [SerializeField] private Sprite defaultSprite;
-    [SerializeField] private Equipment recievedEquipment;
+    [SerializeField] private Image equippedIcon;
+    [SerializeField] private Image defaultSprite;
     [SerializeField] private EquipmentType equipmentType;
 
+    private Equipment recievedEquipment;
     private Button button;
 
-    public Image Image { get { return image; } set { image = value; } }
-    public Sprite DefaultSprite { get { return defaultSprite; } set { defaultSprite = value; } }
+    public Image EquippedIcon { get { return equippedIcon; } set { equippedIcon = value; } }
+    public Image DefaultSprite { get { return defaultSprite; } set { defaultSprite = value; } }
     public Equipment RecievedEquipment { get { return recievedEquipment; } set { recievedEquipment = value; } }
     public EquipmentType ArmorType { get { return equipmentType; } set { equipmentType = value; } }
     public bool IsFilled { get; private set; }
@@ -26,7 +26,7 @@ public class EquipmentSlot : MonoBehaviour
     private void FillSlot()
     {
         IsFilled = true;
-        Image.color = Color.white;
+        EquippedIcon.color = Color.white;
     }
 
     public void Empty()
@@ -35,8 +35,9 @@ public class EquipmentSlot : MonoBehaviour
         {
             RecievedEquipment = null;
             IsFilled = false;
-            Image.color = new Color32(95, 78, 100, 255);
-            Image.sprite = DefaultSprite;
+            EquippedIcon.color = new Color32(95, 78, 100, 255);
+            EquippedIcon.enabled = false;
+            DefaultSprite.enabled = true;
         }
     }
 
@@ -45,7 +46,9 @@ public class EquipmentSlot : MonoBehaviour
         if (equipment != null)
         {
             RecievedEquipment = equipment;
-            Image.sprite = equipment.Icon;
+            EquippedIcon.enabled = true;
+            DefaultSprite.enabled = false;
+            EquippedIcon.sprite = equipment.Icon;
             FillSlot();
         }
     }
