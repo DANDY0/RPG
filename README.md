@@ -2,7 +2,7 @@
 
 #ENGLISH
 
-The !Preview folder contains a gameplay video of the game
+The !README folder contains a gameplay video of the game
 
 Implemented features in the project:
 - Player
@@ -50,7 +50,7 @@ Implemented features in the project:
 
 #Русский
 
-В папке !Preview находится видео геймплея игры
+В папке !README находится видео геймплея игры
 
 В проекте реализованы:
 - Игрок
